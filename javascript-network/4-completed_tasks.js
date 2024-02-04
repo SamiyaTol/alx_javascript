@@ -1,30 +1,21 @@
-#!/usr/bin/python3
-# Salama-Jamal (4-cities_by_state.py)
-"""
-Reinstate details from both tables
-"""
+#!/usr/bin/node
 
-import MySQLdb
-from sys import argv
+const request = require('request');
+const url = process.argv[2];
 
-if __name__ == "__main__":
-
-    # connect to database
-    db = MySQLdb.connect(host="localhost",
-                         port=3306,
-                         user=argv[1],
-                         passwd=argv[2],
-                         db=argv[3])
-
-    # create cursor to exec queries using SQL; join two tables for all info
-    cursor = db.cursor()
-    sql_cmd = """SELECT cities.id, cities.name, states.name
-                 FROM states
-                 INNER JOIN cities ON states.id = cities.state_id
-                 ORDER BY cities.id ASC"""
-    cursor.execute(sql_cmd)
-
-    for row in cursor.fetchall():
-        print(row)
-    cursor.close()
-    db.close()
+request(url, function (error, response, body) {
+  if (error) {
+    console.log(error);
+  }
+  const completed = {};
+  for (const task of JSON.parse(body)) {
+    if (task.completed === true) {
+      if (completed[task.userId]) {
+        completed[task.userId]++;
+      } else {
+        completed[task.userId] = 1;
+      }
+    }
+  }
+  console.log(completed);
+});
